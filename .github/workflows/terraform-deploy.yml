@@ -33,18 +33,34 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
 
-      - name: Get kubeconfig
-        run: |
-          aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.CLUSTER_NAME }}
-          # Opcional: Salvar o kubeconfig em um arquivo se precisar para etapas posteriores
-
       - name: Checkout application repository
         uses: actions/checkout@v3
         with:
           repository: lucaschf/tech-challenge-phase-1
-          path: k8s
+          path: /
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+
+      - name: Build and Push Docker Image
+        working-directory: /
+        run: |
+          docker build -t tech-challenge-phase-1-api:latest .
+          docker tag tech-challenge-phase-1-api:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/project-01:latest 
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/project-01:latest
+
+      - name: Get kubeconfig
+        run: |
+          aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.CLUSTER_NAME }}
 
       - name: Deploy Application
+        working-directory: k8s
         run: |
-          kubectl get configmap alembic-config -o yaml
-          kubectl apply -f k8s/
+          kubectl apply -f . 
+
+      - name: Verify Deployment
+        run: |
+          kubectl get all
+          kubectl rollout status deployment/tech-challenge-phase-1-api
+          kubectl get pods -w
