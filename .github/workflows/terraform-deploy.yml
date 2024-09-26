@@ -1,0 +1,50 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches:
+      - main  # Ajuste se seu branch principal for diferente
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    environment: production  # Ou outro ambiente que você configurou no GitHub
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }} # Use a variável de ambiente ou defina diretamente
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+
+      - name: Get kubeconfig
+        run: |
+          aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.CLUSTER_NAME }}
+          # Opcional: Salve o kubeconfig em um arquivo se precisar para etapas posteriores
+
+      - name: Checkout application repository
+        uses: actions/checkout@v3
+        with:
+          repository: seu-usuario/seu-repositorio-kubernetes  # Substitua pelos seus dados
+          path: kubernetes-manifests  # Nome do diretório onde os manifestos estão
+
+      - name: Deploy Application
+        run: |
+          kubectl apply -f kubernetes-manifests/deployment.yaml 
+          # Ajuste o caminho se necessário
