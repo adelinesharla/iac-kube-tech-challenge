@@ -3,13 +3,13 @@ name: Terraform Deploy
 on:
   push:
     branches:
-      - main  # Ajuste se seu branch principal for diferente
+      - main
 
 jobs:
   terraform:
     name: Terraform
     runs-on: ubuntu-latest
-    environment: production  # Ou outro ambiente que você configurou no GitHub
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,7 +19,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }} # Use a variável de ambiente ou defina diretamente
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
