@@ -36,15 +36,15 @@ jobs:
       - name: Get kubeconfig
         run: |
           aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.CLUSTER_NAME }}
-          # Opcional: Salve o kubeconfig em um arquivo se precisar para etapas posteriores
+          # Opcional: Salvar o kubeconfig em um arquivo se precisar para etapas posteriores
 
       - name: Checkout application repository
         uses: actions/checkout@v3
         with:
-          repository: seu-usuario/seu-repositorio-kubernetes  # Substitua pelos seus dados
-          path: kubernetes-manifests  # Nome do diretório onde os manifestos estão
+          repository: lucaschf/tech-challenge-phase-1
+          path: k8s
 
       - name: Deploy Application
         run: |
-          kubectl apply -f kubernetes-manifests/deployment.yaml 
-          # Ajuste o caminho se necessário
+          kubectl get configmap alembic-config -o yaml
+          kubectl apply -f k8s/
