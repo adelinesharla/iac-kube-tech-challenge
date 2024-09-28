@@ -42,18 +42,18 @@ jobs:
 
       - name: Login to ECR
         run: |
-          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          aws ecr get-login-password --region "us-east-1" | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr."us-east-1".amazonaws.com
 
       - name: Build and Push Docker Image
         working-directory: /
         run: |
           docker build -t tech-challenge-phase-1-api:latest .
-          docker tag tech-challenge-phase-1-api:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/project-01:latest 
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/project-01:latest
+          docker tag tech-challenge-phase-1-api:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr."us-east-1".amazonaws.com/project-01:latest 
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr."us-east-1".amazonaws.com/project-01:latest
 
       - name: Get kubeconfig
         run: |
-          aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.CLUSTER_NAME }}
+          aws eks --region "us-east-1" update-kubeconfig --name ${{ secrets.CLUSTER_NAME }}
 
       - name: Deploy Application
         working-directory: k8s
