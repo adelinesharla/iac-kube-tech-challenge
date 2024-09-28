@@ -22,3 +22,6 @@ variable "vpc_id" {
 variable "aws_iam_role" {
   default = "arn:aws:iam::717145188069:role/LabRole"
 }
+
+variable "aws_subnets" {
+  default = ["subnet-0d1e9a9d216eb7f65", "subnet-06535282ea2be01c9", "subnet-05d6d1c8f40bec41f"]
