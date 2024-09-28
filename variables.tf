@@ -18,3 +18,7 @@ variable "availability_zones" {
 variable "vpc_id" {
   default = "vpc-003fdd4eb65bd0b81"
 }
+
+variable "aws_iam_role" {
+  default = "arn:aws:iam::717145188069:role/LabRole"
+}

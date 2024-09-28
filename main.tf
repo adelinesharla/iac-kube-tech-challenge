@@ -20,7 +20,7 @@ resource "aws_internet_gateway" "gw" {
 
 resource "aws_eks_cluster" "cluster" {
   name     = var.cluster_name
-  role_arn = aws_iam_role.eks_cluster.arn
+  role_arn = var.aws_iam_role
   vpc_config {
     subnet_ids         = [for subnet in aws_subnet.public : subnet.id]
     endpoint_private_access = true
