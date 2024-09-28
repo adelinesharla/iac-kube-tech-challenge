@@ -7,10 +7,14 @@ variable "cluster_name" {
 }
 
 variable "vpc_cidr_block" {
-  default = "10.0.0.0/16"
+  default = ["172.31.0.0/16"]
 }
 
 variable "availability_zones" {
   type    = list(string)
-  default = ["us-east-1a", "us-east-1b"]
+  default = ["us-east-1a", "us-east-1b", "us-east-1c"]
+}
+
+variable "vpc_id" {
+  default = "vpc-003fdd4eb65bd0b81"
 }
