@@ -9,7 +9,7 @@ terraform {
 # Grupo de Segurança
 resource "aws_security_group" "eks_sg" {
   name        = "${var.cluster_name}-sg"
-  vpc_id      = var.vpc_id
+  vpc_id      = data.aws_vpc.vpc.id
 
   # Regras de entrada
   ingress {
@@ -40,7 +40,7 @@ resource "aws_eks_cluster" "cluster" {
   name     = var.cluster_name
   role_arn = var.aws_iam_role
   vpc_config {
-    subnet_ids         = var.aws_subnets
+    subnet_ids         = [for subnet in data.aws_subnet.subnet : subnet.id if subnet.availability_zone != "${var.aws_region}e"]
     security_group_ids = [aws_security_group.eks_sg.id]
   }
   access_config {
@@ -70,7 +70,7 @@ resource "aws_eks_node_group" "my_node_group" {
   cluster_name    = aws_eks_cluster.cluster.name
   node_group_name = var.node_name
   node_role_arn   = var.aws_iam_role
-  subnet_ids      = var.aws_subnets
+  subnet_ids      = [for subnet in data.aws_subnet.subnet : subnet.id if subnet.availability_zone != "${var.aws_region}e"]
 
   scaling_config {
     desired_size = 2
@@ -101,20 +101,5 @@ resource "aws_launch_template" "eks_nodes_lt" {
 
   network_interfaces {
     security_groups = [aws_security_group.eks_sg.id]
-  }
-}
-
-# Buscar a AMI mais recente para EKS
-data "aws_ami" "eks_ami" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-*"]
-  }
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
   }
 }
