@@ -6,28 +6,18 @@ terraform {
   backend "s3" {}
 }
 
-# Definição do cluster EKS
-resource "aws_eks_cluster" "cluster" {
-  name     = var.cluster_name
-  role_arn = var.aws_iam_role
-  vpc_config {
-    subnet_ids         = var.aws_subnets
-    endpoint_private_access = true
-    endpoint_public_access = true
-  }
-}
-
-# Grupo de Segurança para os Nodes
-resource "aws_security_group" "eks_nodes_sg" {
-  name        = "${var.cluster_name}-nodes-sg"
+# Grupo de Segurança
+resource "aws_security_group" "eks_sg" {
+  name        = "${var.cluster_name}-sg"
   vpc_id      = var.vpc_id
 
   # Regras de entrada
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    self        = true
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     from_port   = 443
@@ -45,12 +35,23 @@ resource "aws_security_group" "eks_nodes_sg" {
   }
 }
 
+# Definição do cluster EKS
+resource "aws_eks_cluster" "cluster" {
+  name     = var.cluster_name
+  role_arn = var.aws_iam_role
+  vpc_config {
+    subnet_ids         = var.aws_subnets
+    security_group_ids = [aws_security_group.eks_sg.id]
+  }
+}
+
 # Definição do Node Group
 resource "aws_eks_node_group" "my_node_group" {
   cluster_name    = aws_eks_cluster.cluster.name
   node_group_name = "my-nodes"
   node_role_arn   = var.aws_iam_role
   subnet_ids      = var.aws_subnets
+  disk_size       = 50
 
   scaling_config {
     desired_size = 2
@@ -73,7 +74,7 @@ resource "aws_launch_template" "eks_nodes_lt" {
   instance_type = "t3.nano"
 
   network_interfaces {
-    security_groups = [aws_security_group.eks_nodes_sg.id]
+    security_groups = [aws_security_group.eks_sg.id]
   }
 }
 
