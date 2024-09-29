@@ -58,8 +58,6 @@ resource "aws_eks_node_group" "my_node_group" {
     max_size     = 3
   }
 
-  instance_types = ["t3.nano"]
-
   depends_on = [aws_eks_cluster.cluster]
 
   launch_template {
