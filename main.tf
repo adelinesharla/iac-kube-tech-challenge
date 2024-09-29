@@ -9,7 +9,7 @@ terraform {
 # Grupo de Segurança
 resource "aws_security_group" "eks_sg" {
   name        = "${var.cluster_name}-sg"
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = ""
 
   # Regras de entrada
   ingress {
