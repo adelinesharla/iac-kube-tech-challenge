@@ -20,7 +20,6 @@ resource "aws_eks_cluster" "cluster" {
 # Grupo de Segurança para os Nodes
 resource "aws_security_group" "eks_nodes_sg" {
   name        = "${var.cluster_name}-nodes-sg"
-  description = "Grupo de segurança para os nodes do cluster EKS"
   vpc_id      = var.vpc_id
 
   # Regras de entrada
