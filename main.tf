@@ -35,6 +35,19 @@ resource "aws_security_group" "eks_sg" {
   }
 }
 
+# Definição do cluster EKS
+resource "aws_eks_cluster" "cluster" {
+  name     = var.cluster_name
+  role_arn = var.aws_iam_role
+  vpc_config {
+    subnet_ids         = var.aws_subnets
+    security_group_ids = [aws_security_group.eks_sg.id]
+  }
+  access_config {
+    authentication_mode = var.accessConfig
+  }
+}
+
 resource "aws_eks_access_entry" "eks-access-entry" {
   cluster_name      = aws_eks_cluster.eks-cluster.name
   principal_arn     = var.principalArn
@@ -49,19 +62,6 @@ resource "aws_eks_access_policy_association" "eks-access-policy" {
 
   access_scope {
     type = "cluster"
-  }
-}
-
-# Definição do cluster EKS
-resource "aws_eks_cluster" "cluster" {
-  name     = var.cluster_name
-  role_arn = var.aws_iam_role
-  vpc_config {
-    subnet_ids         = var.aws_subnets
-    security_group_ids = [aws_security_group.eks_sg.id]
-  }
-  access_config {
-    authentication_mode = var.accessConfig
   }
 }
 
