@@ -35,6 +35,23 @@ resource "aws_security_group" "eks_sg" {
   }
 }
 
+resource "aws_eks_access_entry" "eks-access-entry" {
+  cluster_name      = aws_eks_cluster.eks-cluster.name
+  principal_arn     = var.principalArn
+  kubernetes_groups = ["my-nodes"]
+  type              = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "eks-access-policy" {
+  cluster_name  = aws_eks_cluster.eks-cluster.name
+  policy_arn    = var.policyArn
+  principal_arn = var.principalArn
+
+  access_scope {
+    type = "cluster"
+  }
+}
+
 # Definição do cluster EKS
 resource "aws_eks_cluster" "cluster" {
   name     = var.cluster_name
@@ -43,12 +60,15 @@ resource "aws_eks_cluster" "cluster" {
     subnet_ids         = var.aws_subnets
     security_group_ids = [aws_security_group.eks_sg.id]
   }
+  access_config {
+    authentication_mode = var.accessConfig
+  }
 }
 
 # Definição do Node Group
 resource "aws_eks_node_group" "my_node_group" {
   cluster_name    = aws_eks_cluster.cluster.name
-  node_group_name = "my-nodes"
+  node_group_name = var.node_name
   node_role_arn   = var.aws_iam_role
   subnet_ids      = var.aws_subnets
 
@@ -57,8 +77,6 @@ resource "aws_eks_node_group" "my_node_group" {
     min_size     = 1
     max_size     = 3
   }
-
-  depends_on = [aws_eks_cluster.cluster]
 
   launch_template {
     id      = aws_launch_template.eks_nodes_lt.id 
@@ -69,7 +87,7 @@ resource "aws_eks_node_group" "my_node_group" {
 # Launch Template para os Nodes
 resource "aws_launch_template" "eks_nodes_lt" {
   name_prefix   = "${var.cluster_name}-node-group-lt-"
-  image_id      = data.aws_ami.eks_ami.id # Certifique-se de ter essa AMI definida
+  image_id      = data.aws_ami.eks_ami.id
   instance_type = "t3.nano"
 
   block_device_mappings {

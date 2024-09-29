@@ -26,3 +26,19 @@ variable "aws_iam_role" {
 variable "aws_subnets" {
   default = ["subnet-0d1e9a9d216eb7f65", "subnet-06535282ea2be01c9", "subnet-05d6d1c8f40bec41f"]
 }
+
+variable "accessConfig" {
+  default = "API_AND_CONFIG_MAP"
+}
+
+variable "node_name" {
+  default = "my-nodes"
+}
+
+variable "principalArn" {
+  default = "arn:aws:iam::257266759997:role/voclabs"
+}
+
+variable "policyArn" {
+  default = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+}
