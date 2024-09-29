@@ -71,7 +71,15 @@ resource "aws_launch_template" "eks_nodes_lt" {
   name_prefix   = "${var.cluster_name}-node-group-lt-"
   image_id      = data.aws_ami.eks_ami.id # Certifique-se de ter essa AMI definida
   instance_type = "t3.nano"
-  disk_size       = 30
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+
+    ebs {
+      volume_size = 30
+      volume_type = "gp2"
+    }
+  }
 
   network_interfaces {
     security_groups = [aws_security_group.eks_sg.id]
