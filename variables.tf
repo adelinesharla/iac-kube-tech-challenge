@@ -19,7 +19,7 @@ variable "accessConfig" {
 }
 
 variable "node_name" {
-  default = "my-nodes"
+  default = "my-nodes-group"
 }
 
 variable "principalArn" {

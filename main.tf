@@ -51,7 +51,7 @@ resource "aws_eks_cluster" "cluster" {
 resource "aws_eks_access_entry" "eks-access-entry" {
   cluster_name      = aws_eks_cluster.cluster.name
   principal_arn     = var.principalArn
-  kubernetes_groups = ["my-nodes"]
+  kubernetes_groups = ["my-nodes-group"]
   type              = "STANDARD"
 }
 
