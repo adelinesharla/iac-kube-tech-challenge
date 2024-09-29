@@ -51,7 +51,6 @@ resource "aws_eks_node_group" "my_node_group" {
   node_group_name = "my-nodes"
   node_role_arn   = var.aws_iam_role
   subnet_ids      = var.aws_subnets
-  disk_size       = 50
 
   scaling_config {
     desired_size = 2
@@ -72,6 +71,7 @@ resource "aws_launch_template" "eks_nodes_lt" {
   name_prefix   = "${var.cluster_name}-node-group-lt-"
   image_id      = data.aws_ami.eks_ami.id # Certifique-se de ter essa AMI definida
   instance_type = "t3.nano"
+  disk_size       = 30
 
   network_interfaces {
     security_groups = [aws_security_group.eks_sg.id]
