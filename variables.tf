@@ -23,7 +23,7 @@ variable "node_name" {
 }
 
 variable "principalArn" {
-  default = "arn:aws:iam::257266759997:role/voclabs"
+  default = "arn:aws:iam::717145188069:role/voclabs"
 }
 
 variable "policyArn" {
