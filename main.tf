@@ -6,6 +6,7 @@ terraform {
   backend "s3" {}
 }
 
+# Definição do cluster EKS
 resource "aws_eks_cluster" "cluster" {
   name     = var.cluster_name
   role_arn = var.aws_iam_role
@@ -14,4 +15,25 @@ resource "aws_eks_cluster" "cluster" {
     endpoint_private_access = true
     endpoint_public_access = true
   }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_AmazonEKSClusterPolicy, 
+    aws_iam_role_policy_attachment.eks_AmazonEKSVPCResourceController,
+  ] 
+}
+
+# Definição do Node Group
+resource "aws_eks_node_group" "my_node_group" {
+  cluster_name    = aws_eks_cluster.cluster.name
+  node_group_name = "my-nodes"
+  node_role_arn   = var.aws_iam_role
+  subnet_ids      = var.aws_subnets
+
+  scaling_config {
+    desired_size = 2
+    min_size     = 1
+    max_size     = 3
+  }
+
+  instance_types = ["t3.nano"]
 }
