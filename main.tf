@@ -1,4 +1,4 @@
-provider "aws" {
+kubectl rollout status deployment/tech-challenge-phase-1-approvider "aws" {
   region = var.aws_region 
 }
 
@@ -15,11 +15,6 @@ resource "aws_eks_cluster" "cluster" {
     endpoint_private_access = true
     endpoint_public_access = true
   }
-
-  depends_on = [
-    aws_iam_role_policy_attachment.eks_AmazonEKSClusterPolicy, 
-    aws_iam_role_policy_attachment.eks_AmazonEKSVPCResourceController,
-  ] 
 }
 
 # Definição do Node Group
@@ -36,4 +31,6 @@ resource "aws_eks_node_group" "my_node_group" {
   }
 
   instance_types = ["t3.nano"]
+
+  depends_on = [aws_eks_cluster.cluster]
 }
