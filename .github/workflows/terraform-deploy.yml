@@ -42,6 +42,7 @@ jobs:
         with:
           repository: lucaschf/tech-challenge-phase-1
           path: /
+          token: ${{ secrets.PAT }}
 
       - name: Login to ECR
         run: |
