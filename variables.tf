@@ -22,10 +22,14 @@ variable "node_name" {
   default = "my-nodes-group"
 }
 
-variable "principalArn" {
+variable "principal_arn" {
   default = "arn:aws:iam::717145188069:role/voclabs"
 }
 
-variable "policyArn" {
+variable "policy_arn" {
   default = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+}
+
+variable "instance_type" {
+  default = "t3.nano"
 }
