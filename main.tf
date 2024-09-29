@@ -2,6 +2,10 @@ provider "aws" {
   region = var.aws_region 
 }
 
+terraform {
+  backend "s3" {}
+}
+
 resource "aws_eks_cluster" "cluster" {
   name     = var.cluster_name
   role_arn = var.aws_iam_role
