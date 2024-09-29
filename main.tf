@@ -1,4 +1,4 @@
-kubectl rollout status deployment/tech-challenge-phase-1-approvider "aws" {
+provider "aws" {
   region = var.aws_region 
 }
 
